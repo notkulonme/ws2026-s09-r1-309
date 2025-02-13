@@ -36,7 +36,7 @@ data class ErrorData(
 ) {
     override fun toString(): String {
         if (errors.size > 1)
-            return "$line,\"${errors.joinToString(",")}\"\n"
+            return "$line,\"${errors.joinToString(", ")}\"\n"
         else if (errors.size == 1)
             return "$line,${errors[0]}\n"
         else
