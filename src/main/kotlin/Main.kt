@@ -104,19 +104,29 @@ suspend fun main(args: Array<String>) {
                     }
                 }
 
-            val joinedAt = validateDates(elements[9], errorData.errors)
-            var lastPurchaseAt = validateDates(elements[10], errorData.errors)
+            val joinedAt = validateDates(elements[9])
+            var lastPurchaseAt = validateDates(elements[10])
             if (lastPurchaseAt != null && joinedAt != null) {
-                if (lastPurchaseAt.split("-")[0].toInt() !in 2000..2025)
-                    errorData.errors.add("lastPurchaseAt is out of date range")
-                if (joinedAt.split("-")[0].toInt() !in 2000..2025)
-                    errorData.errors.add("joinedAt is out of date range")
-
                 if (lastPurchaseAt.split("-")[0].toInt() < joinedAt.split("-")[0].toInt()) {
                     errorData.errors.add("Last purchase date earlier than join date")
                     lastPurchaseAt = null
                 }
             }
+
+            if (lastPurchaseAt == null){
+                errorData.errors.add("lastPurchaseAt has invalid date format")
+            }else{
+                if (lastPurchaseAt.split("-")[0].toInt() !in 2000..2025)
+                    errorData.errors.add("lastPurchaseAt is out of date range")
+            }
+
+            if(joinedAt == null){
+                errorData.errors.add("joinedAt has invalid date format")
+            } else{
+                if (joinedAt.split("-")[0].toInt() !in 2000..2025)
+                    errorData.errors.add("joinedAt is out of date range")
+            }
+
             val totalSpending = elements[11].toDouble()
             val averageOrderValue = elements[12].toDouble()
             val frequency = elements[13].toInt()
@@ -166,7 +176,7 @@ suspend fun main(args: Array<String>) {
 
     val url = args[1]
     println("importing to $url")
-    val unableToUpload = uploadToServer(url, customerList)
+    val unableToUpload = /*uploadToServer(url, customerList)*/ ArrayList<Customer>()
     if (unableToUpload.size > 0) {
         println("unable to upload these:\n${unableToUpload.joinToString ( "\n" )}")
     }
@@ -215,12 +225,9 @@ fun validateDates(date: String, errorList: ArrayList<String> = ArrayList()): Str
     } else if (date.matches(isoPattern)) {
         validFormat.append(date)
     } else
-        errorList.add("Invalid date format")
+        return null
 
-    return if (validFormat.toString().isNotEmpty())
-        validFormat.toString()
-    else
-        null
+    return validFormat.toString()
 }
 
 fun Int.toDateString(): String {
