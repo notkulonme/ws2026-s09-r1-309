@@ -156,6 +156,7 @@ fun main() {
     println(errorList)
 
     //TODO feltölteni az adatbázisba a fileokat
+
 }
 
 fun validateDates(date: String, errorList: ArrayList<String> = ArrayList()): String? {
