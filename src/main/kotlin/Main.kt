@@ -1,8 +1,12 @@
 package org.example
 
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.*
+import io.ktor.client.request.*
+import io.ktor.client.utils.EmptyContent.contentType
+import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.encodeToJsonElement
 import java.io.File
 
 
@@ -45,9 +49,12 @@ data class CustomerList(
     val customers: ArrayList<Customer>
 )
 
-fun main() {
-    val customerList = CustomerList(ArrayList<Customer>())
+suspend fun main(args: Array<String>) {
+    val customerList = ArrayList<Customer>()
     val errorList = StringBuilder("Row Number,Error Description\n")
+
+    println("processing ${args[0]}")
+
 
     File("C:\\Users\\nrics\\Desktop\\ws2026-s09-hu-r1\\assets\\customers.csv").readLines().drop(1)
         .forEachIndexed { index, line ->
@@ -131,7 +138,7 @@ fun main() {
             }
             if (errorData.errors.size != 0)
                 errorList.append(errorData.toString())
-            customerList.customers.add(
+            customerList.add(
                 Customer(
                     id = id,
                     firstName = firstName,
@@ -152,11 +159,34 @@ fun main() {
                 )
             )
         }
-    val validatedJson = Json { prettyPrint = true }.encodeToString(customerList).replace(": null\n", ": \"\"\n")
-    println(errorList)
 
-    //TODO feltölteni az adatbázisba a fileokat
+    val errorFileName = "error_report.csv"
+    File(errorFileName).writeText(errorList.toString())
+    println("errors have been saved to $errorFileName")
 
+    val url = args[1]
+    println("importing to $url")
+    //uploadToServer(url, customerList)
+}
+
+suspend fun uploadToServer(url:String, customerList: ArrayList<Customer>){
+    val json = Json { prettyPrint = true }
+    val client = HttpClient(OkHttp)
+
+    val unableToUpload = ArrayList<Customer>()
+    for (customer in customerList) {
+        val response = client.post(url) {
+            contentType(ContentType.Application.Json)
+            setBody(json.encodeToString(customer).replace(": null\n", ": \"\"\n"))
+        }
+        if (response.status != HttpStatusCode.OK || response.status != HttpStatusCode.Created){
+            unableToUpload.add(customer)
+        }
+    }
+    if (unableToUpload.size > 0) {
+        println("unable to upload these:\n${unableToUpload.joinToString ( "\n" )}")
+    }
+    client.close()
 }
 
 fun validateDates(date: String, errorList: ArrayList<String> = ArrayList()): String? {
