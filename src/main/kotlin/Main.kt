@@ -166,10 +166,16 @@ suspend fun main(args: Array<String>) {
 
     val url = args[1]
     println("importing to $url")
-    //uploadToServer(url, customerList)
+    val unableToUpload = uploadToServer(url, customerList)
+    if (unableToUpload.size > 0) {
+        println("unable to upload these:\n${unableToUpload.joinToString ( "\n" )}")
+    }
+    else{
+        println("everything was uploaded")
+    }
 }
 
-suspend fun uploadToServer(url:String, customerList: ArrayList<Customer>){
+suspend fun uploadToServer(url:String, customerList: ArrayList<Customer>):ArrayList<Customer>{
     val json = Json { prettyPrint = true }
     val client = HttpClient(OkHttp)
 
@@ -179,14 +185,13 @@ suspend fun uploadToServer(url:String, customerList: ArrayList<Customer>){
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(customer).replace(": null\n", ": \"\"\n"))
         }
-        if (response.status != HttpStatusCode.OK || response.status != HttpStatusCode.Created){
+        if (response.status.value != 201){
             unableToUpload.add(customer)
         }
     }
-    if (unableToUpload.size > 0) {
-        println("unable to upload these:\n${unableToUpload.joinToString ( "\n" )}")
-    }
     client.close()
+
+    return unableToUpload
 }
 
 fun validateDates(date: String, errorList: ArrayList<String> = ArrayList()): String? {
