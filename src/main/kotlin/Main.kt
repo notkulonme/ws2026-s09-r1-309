@@ -3,60 +3,20 @@ package org.example
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
-import io.ktor.client.utils.EmptyContent.contentType
 import io.ktor.http.*
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.File
 
 
-@Serializable
-data class Customer(
-    val id: String,
-    val firstName: String,
-    val lastName: String,
-    val age: Int?,
-    val gender: String?,
-    val postalCode: String,
-    val email: String?,
-    val phone: String?,
-    val membership: String?,
-    val joinedAt: String?,
-    val lastPurchaseAt: String?,
-    val totalSpending: Double,
-    val averageOrderValue: Double,
-    val frequency: Int,
-    val preferredCategory: String?,
-    val churned: Boolean?
-)
-
-data class ErrorData(
-    val line: Int,
-    val errors: ArrayList<String>
-) {
-    override fun toString(): String {
-        if (errors.size > 1)
-            return "$line,\"${errors.joinToString(", ")}\"\n"
-        else if (errors.size == 1)
-            return "$line,${errors[0]}\n"
-        else
-            return ""
-    }
-}
-
-@Serializable
-data class CustomerList(
-    val customers: ArrayList<Customer>
-)
-
+//TODO writing out the proccessed data into a file
 suspend fun main(args: Array<String>) {
-    val customerList = ArrayList<Customer>()
+    val customerList = CustomerList()
     val errorList = StringBuilder("Row Number,Error Description\n")
 
     println("processing ${args[0]}")
 
-
-    File("C:\\Users\\nrics\\Desktop\\ws2026-s09-hu-r1\\assets\\customers.csv").readLines().drop(1)
+    //reading the files content and proccesing it
+    File(args[0]).readLines().drop(1)
         .forEachIndexed { index, line ->
 
             val errorData = ErrorData(index + 2, ArrayList<String>())
@@ -106,12 +66,7 @@ suspend fun main(args: Array<String>) {
 
             val joinedAt = validateDates(elements[9])
             var lastPurchaseAt = validateDates(elements[10])
-            if (lastPurchaseAt != null && joinedAt != null) {
-                if (lastPurchaseAt.split("-")[0].toInt() < joinedAt.split("-")[0].toInt()) {
-                    errorData.errors.add("Last purchase date earlier than join date")
-                    lastPurchaseAt = null
-                }
-            }
+
 
             if (lastPurchaseAt == null){
                 errorData.errors.add("lastPurchaseAt has invalid date format")
@@ -127,6 +82,12 @@ suspend fun main(args: Array<String>) {
                     errorData.errors.add("joinedAt is out of date range")
             }
 
+            if (lastPurchaseAt != null && joinedAt != null) {
+                if (lastPurchaseAt.split("-")[0].toInt() < joinedAt.split("-")[0].toInt()) {
+                    errorData.errors.add("Last purchase date earlier than join date")
+                    lastPurchaseAt = null
+                }
+            }
             val totalSpending = elements[11].toDouble()
             val averageOrderValue = elements[12].toDouble()
             val frequency = elements[13].toInt()
@@ -146,8 +107,10 @@ suspend fun main(args: Array<String>) {
                     null
                 }
             }
+
             if (errorData.errors.size != 0)
                 errorList.append(errorData.toString())
+
             customerList.add(
                 Customer(
                     id = id,
@@ -176,7 +139,7 @@ suspend fun main(args: Array<String>) {
 
     val url = args[1]
     println("importing to $url")
-    val unableToUpload = /*uploadToServer(url, customerList)*/ ArrayList<Customer>()
+    val unableToUpload = /* uploadToServer(url, customerList.customers)*/ ArrayList<Customer>()
     if (unableToUpload.size > 0) {
         println("unable to upload these:\n${unableToUpload.joinToString ( "\n" )}")
     }
