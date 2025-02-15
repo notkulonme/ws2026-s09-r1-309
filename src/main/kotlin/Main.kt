@@ -1,4 +1,4 @@
-package org.example
+package hu.notkulonme.import_script
 
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
@@ -68,16 +68,16 @@ suspend fun main(args: Array<String>) {
             var lastPurchaseAt = validateDates(elements[10])
 
 
-            if (lastPurchaseAt == null){
+            if (lastPurchaseAt == null) {
                 errorData.errors.add("lastPurchaseAt has invalid date format")
-            }else{
+            } else {
                 if (lastPurchaseAt.split("-")[0].toInt() !in 2000..2025)
                     errorData.errors.add("lastPurchaseAt is out of date range")
             }
 
-            if(joinedAt == null){
+            if (joinedAt == null) {
                 errorData.errors.add("joinedAt has invalid date format")
-            } else{
+            } else {
                 if (joinedAt.split("-")[0].toInt() !in 2000..2025)
                     errorData.errors.add("joinedAt is out of date range")
             }
@@ -139,29 +139,40 @@ suspend fun main(args: Array<String>) {
 
     val url = args[1]
     println("importing to $url")
-    val unableToUpload = /* uploadToServer(url, customerList.customers)*/ ArrayList<Customer>()
+
+    val unableToUpload =  uploadToServer(url, customerList.customers) /*ArrayList<Customer>()*/
     if (unableToUpload.size > 0) {
-        println("unable to upload these:\n${unableToUpload.joinToString ( "\n" )}")
+        println("unable to upload:\n${unableToUpload.joinToString ( "\n" )}")
     }
     else{
         println("everything was uploaded")
     }
+
+
+    val cleanOutputName = "clean.csv"
+    File(cleanOutputName).writeText(getCleanCsv(customerList.customers))
+
 }
 
-suspend fun uploadToServer(url:String, customerList: ArrayList<Customer>):ArrayList<Customer>{
+suspend fun uploadToServer(url: String, customerList: ArrayList<Customer>): ArrayList<Customer> {
     val json = Json { prettyPrint = true }
     val client = HttpClient(OkHttp)
 
     val unableToUpload = ArrayList<Customer>()
-    for (customer in customerList) {
-        val response = client.post(url) {
-            contentType(ContentType.Application.Json)
-            setBody(json.encodeToString(customer).replace(": null\n", ": \"\"\n"))
+    try {
+        for (customer in customerList) {
+            val response = client.post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(json.encodeToString(customer).replace(": null\n", ": \"\"\n"))
+            }
+            if (response.status.value != 201) {
+                unableToUpload.add(customer)
+            }
         }
-        if (response.status.value != 201){
-            unableToUpload.add(customer)
-        }
+    }catch (e:Exception){
+        customerList.forEach{unableToUpload.add(it)}
     }
+
     client.close()
 
     return unableToUpload
@@ -197,5 +208,22 @@ fun Int.toDateString(): String {
     if (this < 10)
         return "0$this"
     return this.toString()
+}
+
+fun getCleanCsv(customers: ArrayList<Customer>): String {
+    val csvContent = StringBuilder()
+    val fields = Customer::class.constructors.first().parameters.drop(1).dropLast(1)
+        .map { it.name } //it drops seen0 and serializationConstructorMarker, probably kotlinx generated parameter
+    csvContent.append("${fields.joinToString(",")}\n")
+
+    customers.forEach { customer ->
+        csvContent.append(customer.toCsv())
+    }
+
+    return csvContent.toString()
+}
+
+fun getCleanedJson(customers: ArrayList<Customer>):String{
+    return Json.encodeToString(customers)
 }
 

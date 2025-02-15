@@ -1,4 +1,4 @@
-package org.example
+package hu.notkulonme.import_script
 
 import kotlinx.serialization.Serializable
 
@@ -20,7 +20,11 @@ data class Customer(
     val frequency: Int,
     val preferredCategory: String?,
     val churned: Boolean?
-)
+) {
+    fun toCsv(): String {
+        return "$id,$firstName,$lastName,$age,$gender,$postalCode,$email,$phone,$membership,$joinedAt,$lastPurchaseAt,$totalSpending,$averageOrderValue,$frequency,$preferredCategory,$churned\n"
+    }
+}
 
 data class ErrorData(
     val line: Int,
@@ -39,8 +43,8 @@ data class ErrorData(
 @Serializable
 data class CustomerList(
     val customers: ArrayList<Customer> = ArrayList()
-){
-    fun add(customer: Customer){
+) {
+    fun add(customer: Customer) {
         customers.add(customer)
     }
 }
