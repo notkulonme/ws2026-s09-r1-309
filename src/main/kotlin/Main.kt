@@ -96,7 +96,7 @@ suspend fun main(args: Array<String>) {
             }
             val totalSpending = elements[11].toDouble()
             val averageOrderValue = elements[12].toDouble()
-            val frequency = elements[13].toInt()
+            val frequency = elements[13].toDouble()
             val preferredCategory = when (elements[14]) {
                 "Unknown", "TBD", "To Be Determined", "N/A" -> {
                     errorData.errors.add("Invalid preferredCategory")
