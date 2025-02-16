@@ -7,7 +7,7 @@ data class Customer(
     val id: String,
     val firstName: String,
     val lastName: String,
-    val age: Int?,
+    val age: Double?,
     val gender: String?,
     val postalCode: String,
     val email: String?,
@@ -17,7 +17,7 @@ data class Customer(
     val lastPurchaseAt: String?,
     val totalSpending: Double,
     val averageOrderValue: Double,
-    val frequency: Int,
+    val frequency: Double,
     val preferredCategory: String?,
     val churned: Boolean?
 )

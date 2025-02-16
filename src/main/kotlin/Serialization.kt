@@ -16,31 +16,39 @@ fun Application.configureSerialization() {
     install(ContentNegotiation) {
         json()
     }
+    val json = Json { prettyPrint=true }
     val client = HttpClient(OkHttp)
     val url = environment.config.property("api.database_url").getString()
-
     routing {
 
         get("/customers/count") {
-            val response = client.get(url)
-            if (response.status != HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.InternalServerError, "database is not running")
+            val response = processGet(client, url)
+            if (response == null){
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
                 return@get
             }
-            val customerList = Json.decodeFromString<ArrayList<Customer>>(response.body<String>())
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
             call.respond(mapOf("count" to customerList.size))
         }
 
         get("/customers/avg-age"){
-            val response = client.get(url)
-            if (response.status != HttpStatusCode.OK) {
-                call.respond(HttpStatusCode.InternalServerError, "database is not running")
+            val response = processGet(client, url)
+            if (response == null){
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
                 return@get
             }
-            val customerList = Json.decodeFromString<ArrayList<Customer>>(response.body<String>())
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
 
             val avgAge = customerList.mapNotNull { it.age }.average()
             call.respond(mapOf("avgAge" to avgAge))
         }
+
     }
+}
+
+suspend fun processGet(client: HttpClient, url:String):String?{
+    val response = client.get(url)
+    if (response.status != HttpStatusCode.OK)
+        return null
+    return response.body<String>().replace(": \"\"",": null")
 }
