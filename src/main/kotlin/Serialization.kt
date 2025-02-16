@@ -31,5 +31,16 @@ fun Application.configureSerialization() {
             call.respond(mapOf("count" to customerList.size))
         }
 
+        get("/customers/avg-age"){
+            val response = client.get(url)
+            if (response.status != HttpStatusCode.OK) {
+                call.respond(HttpStatusCode.InternalServerError, "database is not running")
+                return@get
+            }
+            val customerList = Json.decodeFromString<ArrayList<Customer>>(response.body<String>())
+
+            val avgAge = customerList.mapNotNull { it.age }.average()
+            call.respond(mapOf("avgAge" to avgAge))
+        }
     }
 }
