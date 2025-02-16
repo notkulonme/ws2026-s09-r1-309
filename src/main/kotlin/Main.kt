@@ -10,18 +10,24 @@ import java.io.File
 
 //TODO writing out the proccessed data into a file
 suspend fun main(args: Array<String>) {
+    val filePath = args[0]
+    val url = args[1]
+
     val customerList = CustomerList()
     val errorList = StringBuilder("Row Number,Error Description\n")
 
-    println("processing ${args[0]}")
+    println("processing $filePath")
 
     //reading the files content and proccesing it
-    File(args[0]).readLines().drop(1)
+    File(filePath).readLines().drop(1)
         .forEachIndexed { index, line ->
 
             val errorData = ErrorData(index + 2, ArrayList<String>())
-
             val elements = line.split(Regex(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)"))//checks if the , char is not between "
+
+            if (elements.size != 16)
+                return@forEachIndexed
+
             val id = elements[0]
             val firstName = elements[1]
             val lastName = elements[2]
@@ -137,10 +143,8 @@ suspend fun main(args: Array<String>) {
     File(errorFileName).writeText(errorList.toString())
     println("errors have been saved to $errorFileName")
 
-    val url = args[1]
     println("importing to $url")
-
-    val unableToUpload =  uploadToServer(url, customerList.customers) /*ArrayList<Customer>()*/
+    val unableToUpload =  uploadToServer(url, customerList.customers)
     if (unableToUpload.size > 0) {
         println("unable to upload:\n${unableToUpload.joinToString ( "\n" )}")
     }
@@ -151,6 +155,7 @@ suspend fun main(args: Array<String>) {
 
     val cleanOutputName = "clean.csv"
     File(cleanOutputName).writeText(getCleanCsv(customerList.customers))
+    println("cleaned database have been saved to $cleanOutputName")
 
 }
 
@@ -163,7 +168,7 @@ suspend fun uploadToServer(url: String, customerList: ArrayList<Customer>): Arra
         for (customer in customerList) {
             val response = client.post(url) {
                 contentType(ContentType.Application.Json)
-                setBody(json.encodeToString(customer).replace(": null\n", ": \"\"\n"))
+                setBody(json.encodeToString(customer).replace(": null", ": \"\""))
             }
             if (response.status.value != 201) {
                 unableToUpload.add(customer)
@@ -213,17 +218,18 @@ fun Int.toDateString(): String {
 fun getCleanCsv(customers: ArrayList<Customer>): String {
     val csvContent = StringBuilder()
     val fields = Customer::class.constructors.first().parameters.drop(1).dropLast(1)
-        .map { it.name } //it drops seen0 and serializationConstructorMarker, probably kotlinx generated parameter
+        .map { it.name } //it drops seen0 and serializationConstructorMarker, probably kotlinx generated parameters
     csvContent.append("${fields.joinToString(",")}\n")
 
     customers.forEach { customer ->
-        csvContent.append(customer.toCsv())
+        csvContent.append(customer.toCsv().replace(",null", ",\"\""))//id can't be null
     }
 
     return csvContent.toString()
 }
 
 fun getCleanedJson(customers: ArrayList<Customer>):String{
-    return Json.encodeToString(customers)
+    val json = Json{prettyPrint = true}
+    return json.encodeToString(customers).replace(": null", ": \"\"")
 }
 
