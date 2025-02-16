@@ -19,7 +19,11 @@ repositories {
     mavenCentral()
 }
 
+val ktor_client_version:String by project
+
 dependencies {
+    implementation("io.ktor:ktor-client-core:$ktor_client_version")
+    implementation("io.ktor:ktor-client-okhttp:$ktor_client_version")
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.serialization.kotlinx.json)
