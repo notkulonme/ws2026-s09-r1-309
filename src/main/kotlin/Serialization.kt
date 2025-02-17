@@ -79,6 +79,17 @@ fun Application.configureSerialization() {
             val averageValue = customerList.map { it.averageOrderValue }.average()
             call.respond(mapOf("avgOrderValue" to averageValue))
         }
+
+        get("/customers/purchase-frequency"){
+            val response = processGet(client, url)
+            if (response == null){
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
+                return@get
+            }
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
+            val averageValue = customerList.map { it.frequency }.average()
+            call.respond(mapOf("frequency" to averageValue))
+        }
     }
 }
 
