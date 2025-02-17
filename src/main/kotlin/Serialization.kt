@@ -58,6 +58,17 @@ fun Application.configureSerialization() {
             call.respond(mapOf("preferedCategory" to category))
         }
 
+        get("/sum-of-purchase"){
+            val response = processGet(client, url)
+            if (response == null){
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
+                return@get
+            }
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
+            val sumOfPurchase = customerList.sumOf { it.totalSpending }
+            call.respond(mapOf("sumOfPurchase" to sumOfPurchase))
+        }
+
     }
 }
 
