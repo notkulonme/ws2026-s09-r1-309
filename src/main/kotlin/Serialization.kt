@@ -58,7 +58,7 @@ fun Application.configureSerialization() {
             call.respond(mapOf("preferedCategory" to category))
         }
 
-        get("/sum-of-purchase"){
+        get("/customers/sum-of-purchase"){
             val response = processGet(client, url)
             if (response == null){
                 call.respond(HttpStatusCode.InternalServerError, "Database error")
@@ -69,6 +69,16 @@ fun Application.configureSerialization() {
             call.respond(mapOf("sumOfPurchase" to sumOfPurchase))
         }
 
+        get("/customers/avg-order-value"){
+            val response = processGet(client, url)
+            if (response == null){
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
+                return@get
+            }
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
+            val averageValue = customerList.map { it.averageOrderValue }.average()
+            call.respond(mapOf("avgOrderValue" to averageValue))
+        }
     }
 }
 
