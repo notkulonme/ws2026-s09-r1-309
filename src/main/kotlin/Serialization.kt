@@ -42,6 +42,21 @@ fun Application.configureSerialization() {
             val avgAge = customerList.mapNotNull { it.age }.average()
             call.respond(mapOf("avgAge" to avgAge))
         }
+        get("/customers/most-frequent-purchase-category"){
+            val response = processGet(client, url)
+            if (response == null){
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
+                return@get
+            }
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
+            val category = customerList
+                .mapNotNull { it.preferredCategory }
+                .groupingBy { it }
+                .eachCount()
+                .maxByOrNull { it.value }
+                ?.key
+            call.respond(mapOf("preferedCategory" to category))
+        }
 
     }
 }
