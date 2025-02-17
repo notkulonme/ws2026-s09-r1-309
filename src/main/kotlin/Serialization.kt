@@ -110,7 +110,7 @@ fun Application.configureSerialization() {
             call.respond(genderDistribution)
         }
 
-        get("/customers/membership-dist"){
+        get("/customers/membership-dist") {
             val response = processGet(client, url)
             if (response == null) {
                 call.respond(HttpStatusCode.InternalServerError, "Database error")
@@ -125,7 +125,7 @@ fun Application.configureSerialization() {
             call.respond(membershipDistribution)
         }
 
-        get("/customers/categories"){
+        get("/customers/categories") {
             val response = processGet(client, url)
             if (response == null) {
                 call.respond(HttpStatusCode.InternalServerError, "Database error")
@@ -157,6 +157,23 @@ fun Application.configureSerialization() {
             call.respond(mapOf("topSpenders" to topSpenders))
         }
 
+        get("customers/trends") {
+            val response = processGet(client, url)
+            if (response == null) {
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
+                return@get
+            }
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
+            val trends = customerList
+                .mapNotNull { it.joinedAt?.split("-")?.get(0)?.toInt() }
+                .groupingBy { it }
+                .eachCount()
+                .toList()
+                .sortedBy { it.first }
+                .map { mapOf(it.first to it.second) }
+            call.respond(mapOf("trends" to trends))
+        }
+
     }
 }
 
@@ -167,7 +184,7 @@ suspend fun processGet(client: HttpClient, url: String): String? {
         if (response.status != HttpStatusCode.OK)
             return null
         return response.body<String>().replace(": \"\"", ": null")
-    } catch (e: Exception){
+    } catch (e: Exception) {
         log.error("database is not running")
         return null
     }
