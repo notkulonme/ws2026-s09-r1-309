@@ -125,6 +125,38 @@ fun Application.configureSerialization() {
             call.respond(membershipDistribution)
         }
 
+        get("/customers/categories"){
+            val response = processGet(client, url)
+            if (response == null) {
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
+                return@get
+            }
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
+            val categories = customerList
+                .mapNotNull { it.preferredCategory }
+                .groupingBy { it }
+                .eachCount()
+                .toList()
+                .sortedByDescending { it.second }
+                .toMap()
+            call.respond(mapOf("categories" to categories))
+        }
+
+        get("/customers/top-spenders") {
+            val response = processGet(client, url)
+            if (response == null) {
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
+                return@get
+            }
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
+            val topSpenders = customerList
+                .map { "${it.firstName} ${it.lastName}" to it.totalSpending }
+                .sortedByDescending { it.second }
+                .take(10)
+                .map { mapOf(it.first to it.second) }
+            call.respond(mapOf("topSpenders" to topSpenders))
+        }
+
     }
 }
 
