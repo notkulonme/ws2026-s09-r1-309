@@ -174,6 +174,16 @@ fun Application.configureSerialization() {
             call.respond(mapOf("trends" to trends))
         }
 
+        get("/customers") {
+            val response = processGet(client, url)
+            if (response == null) {
+                call.respond(HttpStatusCode.InternalServerError, "Database error")
+                return@get
+            }
+            val customerList = json.decodeFromString<ArrayList<Customer>>(response)
+            call.respond(mapOf("customers" to customerList))
+        }
+
     }
 }
 
