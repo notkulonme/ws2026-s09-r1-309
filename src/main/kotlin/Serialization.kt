@@ -11,6 +11,8 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.encodeToJsonElement
 import org.slf4j.LoggerFactory
 
 fun Application.configureSerialization() {
@@ -106,8 +108,10 @@ fun Application.configureSerialization() {
                 .mapNotNull { it.gender }
                 .groupingBy { it }
                 .eachCount()
-                .toMap()
-            call.respond(genderDistribution)
+                .toList()
+                .map { JsonArray(listOf(Json.encodeToJsonElement(it.first), Json.encodeToJsonElement(it.second))) }
+
+            call.respond(mapOf("genderDist" to genderDistribution))
         }
 
         get("/customers/membership-dist") {
@@ -121,8 +125,9 @@ fun Application.configureSerialization() {
                 .mapNotNull { it.membership }
                 .groupingBy { it }
                 .eachCount()
-                .toMap()
-            call.respond(membershipDistribution)
+                .toList()
+                .map { JsonArray(listOf(Json.encodeToJsonElement(it.first), Json.encodeToJsonElement(it.second))) }
+            call.respond(mapOf("membershipDist" to membershipDistribution))
         }
 
         get("/customers/categories") {
