@@ -3,8 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
 <body>
-    <h1>test</h1>
+    <fieldset id="overwiew">
+        <Legend>Overwiew</Legend>
+        <p class="float">Total customers: <span id="count">Fetching</span></p>
+        <p class="float">Avrage age: <span id="avg-age">Fetching</span></p>
+        <p class="float">Most frequent purchase category: <span id="most-frequent-purchase-category">Fetching</span></p>
+        <p class="float">Total purchase value: <span id="sum-of-purchase">Fetching</span></p>
+        <p class="float">Average order value: <span id="avg-order-value">Fetching</span></p>
+        <p class="float">Purchase frequency: <span id="purchase-frequency">Fetching</span></p>
+    </fieldset>
+    <div class="container">
+        <fieldset class="chartContainer">
+            <legend>Demographics</legend>
+            <div id="gender-dist"></div>
+            <div id="membership-dist"></div>
+        </fieldset>
+    </div>
+    <script>
+        google.charts.load('current', {'packages':['corechart']})
+        google.charts.setOnLoadCallback(loadDemographics)
+
+        const datas = {}
+        const urls = ["/customers/count","/customers/avg-age","/customers/most-frequent-purchase-category","/customers/sum-of-purchase","/customers/avg-order-value","/customers/purchase-frequency","/customers/gender-dist","/customers/membership-dist","/customers/categories","/customers/top-spenders","/customers/trends",]
+        run()
+
+
+
+        async function run() {
+            await fetchAllDataParallel()
+            console.log(datas)
+            loadOverwiev()
+            loadDemographics()
+        }
+
+        async function fetchDataFromApi(url, obj) {
+            const response = await fetch(url)
+            if(response.ok){
+                const data = await response.json()
+                Object.assign(obj, data)
+            }else{
+                const error = new Object()
+                error[url.split("/")[2]] = "error while fetching data"
+                Object.assign(obj,error)
+            }
+        }
+        async function fetchAllDataParallel() {
+            await Promise.all(urls.map(url => fetchDataFromApi(url, datas)));
+        }
+
+        function loadOverwiev(){
+            document.getElementById("count").innerText = datas["count"]
+            document.getElementById("avg-age").innerText = round(datas["avgAge"])
+            document.getElementById("most-frequent-purchase-category").innerText = datas["preferedCategory"]
+            document.getElementById("sum-of-purchase").innerText = round(datas["sumOfPurchase"])
+            document.getElementById("avg-order-value").innerText = round(datas["avgOrderValue"])
+            document.getElementById("purchase-frequency").innerText = round(datas["frequency"])
+        }
+        function round(num){
+            return Math.round(num*100)/100
+        }
+        function loadDemographics(){
+            console.log(typeof(datas["genderDist"][0][0])+" "+typeof(datas["genderDist"][0][1]))
+            const genderDist = google.visualization.arrayToDataTable(datas["genderDist"])
+            const membershipDist = google.visualization.arrayToDataTable(datas["membershipDist"])
+
+            const genderChart = new google.visualization.PieChart(document.getElementById('gender-dist'))
+            const membershipChart = new google.visualization.PieChart(document.getElementById('membership-dist'))
+
+            genderChart.draw(genderDist, {title: "Gender distribution"})
+            membershipChart.draw(membershipDist, {title: "Membership distribution"})
+        }
+    </script>
 </body>
 </html>

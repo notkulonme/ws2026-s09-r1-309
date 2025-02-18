@@ -1,0 +1,25 @@
+#overwiew{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.float{
+    margin: 1rem;
+}
+
+.container{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.chartContainer{
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 50%;
+    min-width: 30%;
+    align-items: center;
+    justify-content: space-evenly;
+}

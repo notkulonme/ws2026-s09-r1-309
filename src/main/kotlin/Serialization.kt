@@ -109,7 +109,27 @@ fun Application.configureSerialization() {
                 .groupingBy { it }
                 .eachCount()
                 .toList()
-                .map { JsonArray(listOf(Json.encodeToJsonElement(it.first), Json.encodeToJsonElement(it.second))) }
+                .map {
+                    JsonArray(
+                        listOf(
+                            Json.encodeToJsonElement(
+                                when (it.first) {
+                                    "F" -> "Female"
+                                    "M" -> "Male"
+                                    else -> "error"
+                                }
+                            ), Json.encodeToJsonElement(it.second)
+                        )
+                    )
+                }
+                .toMutableList()
+
+            genderDistribution.add(
+                0,
+                JsonArray(listOf(Json.encodeToJsonElement("Gender"), Json.encodeToJsonElement("Count")))
+            )
+
+
 
             call.respond(mapOf("genderDist" to genderDistribution))
         }
@@ -127,6 +147,13 @@ fun Application.configureSerialization() {
                 .eachCount()
                 .toList()
                 .map { JsonArray(listOf(Json.encodeToJsonElement(it.first), Json.encodeToJsonElement(it.second))) }
+                .toMutableList()
+
+            membershipDistribution.add(
+                0,
+                JsonArray(listOf(Json.encodeToJsonElement("Level"), Json.encodeToJsonElement("Count")))
+            )
+
             call.respond(mapOf("membershipDist" to membershipDistribution))
         }
 
