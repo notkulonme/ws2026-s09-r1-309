@@ -13,13 +13,34 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
+    width: 100%;
 }
 
 .chartContainer{
     display: flex;
     flex-wrap: wrap;
     max-width: 50%;
-    min-width: 30%;
+    min-width: 40%;
+    min-height: 20rem;
+    max-height: 20rem;
     align-items: center;
     justify-content: space-evenly;
+    margin: 1rem;
+}
+
+tr td{
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    padding: 0.25rem;
+}
+table{
+    border-collapse: collapse;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.top-spenders{
+    height: 100%;
+    width: 100%;
 }
