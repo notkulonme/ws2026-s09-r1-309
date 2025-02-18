@@ -170,7 +170,14 @@ fun Application.configureSerialization() {
                 .eachCount()
                 .toList()
                 .sortedByDescending { it.second }
-                .toMap()
+                .map { JsonArray(listOf(Json.encodeToJsonElement(it.first), Json.encodeToJsonElement(it.second))) }
+                .toMutableList()
+
+            categories.add(
+                0,
+                JsonArray(listOf(Json.encodeToJsonElement("Name"), Json.encodeToJsonElement("Count")))
+            )
+
             call.respond(mapOf("categories" to categories))
         }
 
@@ -185,7 +192,12 @@ fun Application.configureSerialization() {
                 .map { "${it.firstName} ${it.lastName}" to it.totalSpending }
                 .sortedByDescending { it.second }
                 .take(10)
-                .map { mapOf(it.first to it.second) }
+                .map { JsonArray(listOf(Json.encodeToJsonElement(it.first), Json.encodeToJsonElement(it.second))) }
+                .toMutableList()
+            topSpenders.add(
+                0,
+                JsonArray(listOf(Json.encodeToJsonElement("Name"), Json.encodeToJsonElement("Spent")))
+                )
             call.respond(mapOf("topSpenders" to topSpenders))
         }
 
