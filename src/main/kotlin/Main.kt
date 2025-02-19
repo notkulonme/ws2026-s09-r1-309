@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 
-//TODO writing out the proccessed data into a file
+//TODO chechking if everything is right with validation
 suspend fun main(args: Array<String>) {
     val filePath = args[0]
     val url = args[1]
@@ -70,22 +70,28 @@ suspend fun main(args: Array<String>) {
                     }
                 }
 
-            val joinedAt = validateDates(elements[9])
+            var joinedAt = validateDates(elements[9])
             var lastPurchaseAt = validateDates(elements[10])
 
+            val maxYear = 2025
+            val minYear = 2000
 
             if (lastPurchaseAt == null) {
                 errorData.errors.add("lastPurchaseAt has invalid date format")
             } else {
-                if (lastPurchaseAt.split("-")[0].toInt() !in 2000..2025)
+                if (lastPurchaseAt.split("-")[0].toInt() !in minYear..maxYear) {
                     errorData.errors.add("lastPurchaseAt is out of date range")
+                    lastPurchaseAt = null
+                }
             }
 
             if (joinedAt == null) {
                 errorData.errors.add("joinedAt has invalid date format")
             } else {
-                if (joinedAt.split("-")[0].toInt() !in 2000..2025)
+                if (joinedAt.split("-")[0].toInt() !in minYear..maxYear) {
                     errorData.errors.add("joinedAt is out of date range")
+                    joinedAt = null
+                }
             }
 
             if (lastPurchaseAt != null && joinedAt != null) {
@@ -183,7 +189,7 @@ suspend fun uploadToServer(url: String, customerList: ArrayList<Customer>): Arra
     return unableToUpload
 }
 
-fun validateDates(date: String, errorList: ArrayList<String> = ArrayList()): String? {
+fun validateDates(date: String): String? {
     val slashPattern = Regex("^\\d{1,2}/\\d{1,2}/\\d{4}$")
     val isoWithTimePattern = Regex("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$")
     val isoPattern = Regex("^\\d{4}-\\d{2}-\\d{2}$")
@@ -194,9 +200,9 @@ fun validateDates(date: String, errorList: ArrayList<String> = ArrayList()): Str
         val year = splitDate[2].toInt()
 
         validFormat.append("$year-")
-        if (splitDate[1].toInt() > 12) {
+        if (splitDate[1].toInt() > 12) {//mm-dd-yy
             validFormat.append("${splitDate[0].toInt().toDateString()}-${splitDate[1].toInt().toDateString()}")
-        } else {
+        } else {//dd-mm-yy
             validFormat.append("${splitDate[1].toInt().toDateString()}-${splitDate[0].toInt().toDateString()}")
         }
     } else if (date.matches(isoWithTimePattern)) {
