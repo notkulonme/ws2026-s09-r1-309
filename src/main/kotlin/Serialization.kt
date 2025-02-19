@@ -214,7 +214,9 @@ fun Application.configureSerialization() {
                 .eachCount()
                 .toList()
                 .sortedBy { it.first }
-                .map { mapOf(it.first to it.second) }
+                .map { JsonArray(listOf(Json.encodeToJsonElement(it.first), Json.encodeToJsonElement(it.second))) }
+                .toMutableList()
+            trends.add(0, JsonArray(listOf(Json.encodeToJsonElement("Years"), Json.encodeToJsonElement("New Customers"))))
             call.respond(mapOf("trends" to trends))
         }
 
