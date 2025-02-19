@@ -20,6 +20,7 @@ repositories {
 }
 
 val ktor_client_version:String by project
+val ktor_version:String by project
 
 dependencies {
     implementation("io.ktor:ktor-client-core:$ktor_client_version")
@@ -32,4 +33,5 @@ dependencies {
     implementation(libs.ktor.server.config.yaml)
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
+    implementation("io.ktor:ktor-server-call-logging:$ktor_version")
 }
