@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 
-//TODO chechking if everything is right with validation
+//TODO new runnable
 suspend fun main(args: Array<String>) {
     val filePath = args[0]
     val url = args[1]
@@ -18,7 +18,7 @@ suspend fun main(args: Array<String>) {
 
     println("processing $filePath")
 
-    //reading the files content and proccesing it
+    //reading the files content and processing it
     File(filePath).readLines().drop(1)
         .forEachIndexed { index, line ->
 
@@ -46,11 +46,11 @@ suspend fun main(args: Array<String>) {
                         elements[6]
                     else {
                         errorData.errors.add("Invalid email format")
-                        ""
+                        null
                     }
                 } else {
                     errorData.errors.add("Invalid email format")
-                    ""
+                    null
                 }
             val phone =
                 if (elements[7].replace(Regex("[^0-9]"), "").length >= 10) {
