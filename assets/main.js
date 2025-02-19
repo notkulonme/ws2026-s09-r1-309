@@ -12,7 +12,7 @@ window.addEventListener('resize', function() {
 
 async function run() {
     await fetchAllDataParallel()
-    
+    console.log(typeof(datas["genderDist"]))
     loadOverwievCharts()
     loadCharts()
     loadTable()
