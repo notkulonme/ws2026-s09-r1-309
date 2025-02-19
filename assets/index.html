@@ -7,15 +7,18 @@
 </head>
 <script src="https://www.gstatic.com/charts/loader.js"></script>
 <body>
-    <fieldset id="overwiew">
-        <Legend>Overwiew</Legend>
-        <p class="float">Total customers: <span id="count">Fetching</span></p>
-        <p class="float">Avrage age: <span id="avg-age">Fetching</span></p>
-        <p class="float">Most frequent purchase category: <span id="most-frequent-purchase-category">Fetching</span></p>
-        <p class="float">Total purchase value: <span id="sum-of-purchase">Fetching</span></p>
-        <p class="float">Average order value: <span id="avg-order-value">Fetching</span></p>
-        <p class="float">Purchase frequency: <span id="purchase-frequency">Fetching</span></p>
-    </fieldset>
+    <div class="container top">
+        <img src="logo.png" class="logo" alt="">
+        <fieldset id="overwiew">
+            <Legend>Overwiew</Legend>
+            <p class="float">Total customers: <span id="count">Fetching</span></p>
+            <p class="float">Avrage age: <span id="avg-age">Fetching</span></p>
+            <p class="float">Most frequent purchase category: <span id="most-frequent-purchase-category">Fetching</span></p>
+            <p class="float">Total purchase value: <span id="sum-of-purchase">Fetching</span></p>
+            <p class="float">Average order value: <span id="avg-order-value">Fetching</span></p>
+            <p class="float">Purchase frequency: <span id="purchase-frequency">Fetching</span></p>
+        </fieldset>
+    </div>
     <div class="container">
         <fieldset class="chartContainer">
             <legend>Demographics</legend>
@@ -36,99 +39,12 @@
             <legend>Top Spenders</legend>
             <div id="top-spenders"></div>
         </fieldset>
+
+        <fieldset id="trendsChartContainer">
+            <legend>Trends</legend>
+            <div id="trends"></div>
+        </fieldset>
     </div>
-    <script>
-        google.charts.load('current', {'packages':['corechart']})
-        google.charts.setOnLoadCallback(loadCharts)
-
-        const datas = {}
-        const urls = ["/customers/count","/customers/avg-age","/customers/most-frequent-purchase-category","/customers/sum-of-purchase","/customers/avg-order-value","/customers/purchase-frequency","/customers/gender-dist","/customers/membership-dist","/customers/categories","/customers/top-spenders","/customers/trends",]
-        run()
-
-        window.addEventListener('resize', function() {
-            loadCharts();
-        });
-
-
-        async function run() {
-            await fetchAllDataParallel()
-            console.log(datas)
-            loadOverwiev()
-            loadCharts()
-            loadTable()
-        }
-
-        async function fetchDataFromApi(url, obj) {
-            const response = await fetch(url)
-            if(response.ok){
-                const data = await response.json()
-                Object.assign(obj, data)
-            }else{
-                const error = new Object()
-                error[url.split("/")[2]] = "error while fetching data"
-                Object.assign(obj,error)
-            }
-        }
-        async function fetchAllDataParallel() {
-            await Promise.all(urls.map(url => fetchDataFromApi(url, datas)));
-        }
-
-        function loadOverwiev(){
-            document.getElementById("count").innerText = datas["count"]
-            document.getElementById("avg-age").innerText = round(datas["avgAge"])
-            document.getElementById("most-frequent-purchase-category").innerText = datas["preferedCategory"]
-            document.getElementById("sum-of-purchase").innerText = round(datas["sumOfPurchase"])
-            document.getElementById("avg-order-value").innerText = round(datas["avgOrderValue"])
-            document.getElementById("purchase-frequency").innerText = round(datas["frequency"])
-        }
-        function round(num){
-            return Math.round(num*100)/100
-        }
-        function loadCharts(){
-            const genderData = google.visualization.arrayToDataTable(datas["genderDist"])
-            const membershipData = google.visualization.arrayToDataTable(datas["membershipDist"])
-            const categoriesData = google.visualization.arrayToDataTable(datas["categories"])
-
-            const genderChart = new google.visualization.PieChart(document.getElementById('gender-dist'))
-            const membershipChart = new google.visualization.PieChart(document.getElementById('membership-dist'))
-            const categoriesChart = new google.visualization.BarChart(document.getElementById('categories'))
-            
-            var containerWidth = document.getElementsByClassName('chartContainer')[0].offsetWidth * 0.9
-            var containerHeight = document.getElementsByClassName('chartContainer')[0].offsetHeight * 0.9
-            const options = {
-                width: containerWidth,
-                height: containerHeight
-            }
-
-            genderChart.draw(genderData,  options)
-            membershipChart.draw(membershipData, options)
-            categoriesChart.draw(categoriesData, options)
-        }
-
-        function loadTable(){
-            const table = document.createElement("table")
-            const dataSet = datas["topSpenders"]
-            
-            for(const dataList of dataSet){
-                const line = document.createElement("tr")
-                for(const element of dataList){
-                    const td = document.createElement("td")
-                    if(typeof(element) === "number"){
-                        td.innerText = round(element)
-                    }
-                    else{
-                        td.innerText = element
-                    }
-                    
-                    line.appendChild(td)
-                }
-                table.appendChild(line)
-            }
-
-            document.getElementById("top-spenders").appendChild(table)
-        }
-
-        
-    </script>
+    <script src="main.js"></script>
 </body>
 </html>

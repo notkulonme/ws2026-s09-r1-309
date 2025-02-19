@@ -3,6 +3,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
+    width: 100%;
 }
 .float{
     margin: 1rem;
@@ -21,8 +22,7 @@
     flex-wrap: wrap;
     max-width: 50%;
     min-width: 40%;
-    min-height: 20rem;
-    max-height: 20rem;
+    height: 20rem;
     align-items: center;
     justify-content: space-evenly;
     margin: 1rem;
@@ -43,4 +43,23 @@ table{
 .top-spenders{
     height: 100%;
     width: 100%;
+}
+
+.logo{
+    width: 10rem;
+    height: auto;
+    padding-right: 2rem;
+}
+.top{
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+#trendsChartContainer{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 90%;
+    height: 15rem;
 }
