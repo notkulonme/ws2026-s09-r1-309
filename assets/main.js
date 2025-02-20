@@ -12,7 +12,6 @@ window.addEventListener('resize', function() {
 
 async function run() {
     await fetchAllDataParallel()
-    console.log(typeof(datas["genderDist"]))
     loadOverwievCharts()
     loadCharts()
     loadTable()
@@ -63,7 +62,7 @@ function loadCharts(){
         legend: { position: 'bottom' }
     }
 
-    const trendsHeight = document.getElementById("trendsChartContainer").offsetHeight * 0.9
+    const trendsHeight = document.getElementById("trendsChartContainer").offsetHeight * 0.85
     const trendsWidth = document.getElementById("trendsChartContainer").offsetWidth * 0.9
     
     const trendsOptions = {

@@ -35,7 +35,7 @@
             <div id="categories"></div>
         </fieldset>
 
-        <fieldset class="chartContainer">
+        <fieldset class="table chartContainer">
             <legend>Top Spenders</legend>
             <div id="top-spenders"></div>
         </fieldset>
@@ -46,5 +46,160 @@
         </fieldset>
     </div>
     <script src="main.js"></script>
+
+    <br><br><br>
+    
+    <fieldset>
+        <legend>User data form</legend>
+        <p id="userDataTutorial">If you don't want specifie a value just leave the field empty. You can use ranges with the .. operator, for example: 100..105, it will contain both values. For setting just maximum or minimum omit one of the values. For undifined values type ".</p>
+        <form class="container" id="userDataForm">
+            <div class="formElement">
+                <label for="id">ID:</label>
+                <br>
+                <input type="text" name="id" id="">
+            </div>
+            <div class="formElement">
+                <label for="firstName">First name:</label>
+                <br>
+                <input type="text" name="firstName">
+            </div>
+            <div class="formElement">
+                <label for="lastName">Last name:</label>
+                <br>
+                <input type="text" name="lastName">
+            </div>
+            <div class="formElement">
+                <label for="age">Age:</label>
+                <br>
+                <input type="text" name="age">
+            </div>
+            <div class="formElement">
+                <label for="gender">Select a gender:</label>
+                <br>
+                <select name="gender" id="">
+                    <option value="">Don't search this</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value='""'>Not specified</option>
+                </select>
+            </div>
+            <div class="formElement">
+                <label for="postalCode">Postal code:</label>
+                <br>
+                <input type="text" name="postalCode">
+            </div>
+            <div class="formElement">
+                <label for="email">Email</label>
+                <br>
+                <input type="text" name="email">
+            </div>
+            <div class="formElement">
+                <label for="phone">Phone number</label>
+                <br>
+                <input type="text" name="phone">
+            </div>
+            <div class="formElement">
+                <label for="membership">Membership status</label>
+                <br>
+                <select name="membership" id="">
+                    <option value="">Don't search this</option>
+                    <option value="gold">Gold</option>
+                    <option value="silver">Silver</option>
+                    <option value="bronze">Bronze</option>
+                    <option value='""'>Not specified</option>
+                </select>
+            </div>
+            <div class="formElement">
+                <label for="joinedAt">Join date:</label>
+                <br>
+                <input type="date" name="joinedAt">
+            </div>
+            <div class="formElement">
+                <label for="lastPurchaseAt">Last purchase date:</label>
+                <br>
+                <input type="date" name="lastPurchaseAt">
+            </div>
+            <div class="formElement">
+                <label for="totalSpending">Total spending:</label>
+                <br>
+                <input type="text" name="totalSpending">
+            </div>
+            <div class="formElement">
+                <label for="averageOrderValue">Average order value:</label>
+                <br>
+                <input type="text" name="averageOrderValue">
+            </div>
+            <div class="formElement">
+                <label for="frequency">Frequency:</label>
+                <br>
+                <input type="text" name="frequency">
+            </div>
+            <div class="formElement">
+                <label for="preferredCategory">Prefered category:</label>
+                <br>
+                <input type="text" name="preferredCategory">
+            </div>
+            <div class="formElement">
+                <label for="churned">Churned</label>
+                <br>
+                <select name="churned" id="">
+                    <option value="">Don't search this</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                    <option value='""'>Not specified</option>
+                </select>
+            </div>
+            <div class="formElement">
+                <label for="_sort">Sorted by</label>
+                <br>
+                <select name="_sort" id="">
+                    <option value=''>Don't sort</option>
+                    <option value="id">ID</option>
+                    <option value="firstName">First name</option>
+                    <option value="lastName">Last name</option>
+                    <option value="age">Age</option>
+                    <option value="gender">Gender</option>
+                    <option value="postalCode">Postal Code</option>
+                    <option value="email">Email</option>
+                    <option value="phone">Phone</option>
+                    <option value="membership">Membership status</option>
+                    <option value="joinedAt">Join date</option>
+                    <option value="lastPurchaseAt">Last purchase date</option>
+                    <option value="totalSpending">Total spending:</option>
+                    <option value="averageOrderValue">Average order value</option>
+                    <option value="frequency">Frequency</option>
+                    <option value="preferredCategory">Prefered category</option>
+                    <option value="churned">Churned</option>
+                </select>
+            </div>
+            <div class="formElement">
+                <label for="_order">Order by:</label>
+                <br>
+                <select name="_order" id="">
+                    <option value=''>Basic order</option>
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+            <div class="formElement">
+                <label for="_page">Page:</label>
+                <br>
+                <input type="number" name="_page" min="0" value="0">
+            </div>
+            <div class="formElement">
+                <input type="submit">
+            </div>
+        </form>
+    </fieldset>
+
+    <br><br>
+
+    <fieldset>
+        <legend>User list</legend>
+        <div id="userTable">
+
+        </div>
+    </fieldset>
+    <script src="searchableList.js"></script>
 </body>
 </html>

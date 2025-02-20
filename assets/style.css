@@ -20,9 +20,8 @@
 .chartContainer{
     display: flex;
     flex-wrap: wrap;
-    max-width: 50%;
-    min-width: 40%;
-    height: 20rem;
+    width: 40%;
+    height: 21rem;
     align-items: center;
     justify-content: space-evenly;
     margin: 1rem;
@@ -38,6 +37,7 @@ table{
     border-collapse: collapse;
     text-align: center;
     vertical-align: middle;
+    width: 100%;
 }
 
 .top-spenders{
@@ -62,4 +62,45 @@ table{
     justify-content: space-evenly;
     width: 90%;
     height: 15rem;
+}
+.table{
+    overflow: scroll !important;
+}
+fieldset{
+    border: 2px solid #0000004f;
+    border-radius: 0.5rem;
+}
+legend{
+    background-color: #0000004f;
+    border-radius: 0.25rem;
+    font-size: larger;
+}
+
+#userTable{
+    max-height: 40rem;
+    overflow: scroll;
+}
+#sticky{
+    position: sticky;
+    top: 0;
+    background-color: white;
+}
+.formElement{
+    text-align: center;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    margin-top: 1rem;
+    width: 15rem;
+}
+.formElement input{
+    width: 100%;
+}
+.formElement select{
+    width: 100%;
+}
+fieldset #userDataTutorial{
+    text-align: center;
+}
+#userDataTutorial{
+    font-size: large;
 }
