@@ -197,7 +197,7 @@ fun Application.configureSerialization() {
             topSpenders.add(
                 0,
                 JsonArray(listOf(Json.encodeToJsonElement("Name"), Json.encodeToJsonElement("Spent")))
-                )
+            )
             call.respond(mapOf("topSpenders" to topSpenders))
         }
 
@@ -216,7 +216,10 @@ fun Application.configureSerialization() {
                 .sortedBy { it.first }
                 .map { JsonArray(listOf(Json.encodeToJsonElement(it.first), Json.encodeToJsonElement(it.second))) }
                 .toMutableList()
-            trends.add(0, JsonArray(listOf(Json.encodeToJsonElement("Years"), Json.encodeToJsonElement("New Customers"))))
+            trends.add(
+                0,
+                JsonArray(listOf(Json.encodeToJsonElement("Years"), Json.encodeToJsonElement("New Customers")))
+            )
             call.respond(mapOf("trends" to trends))
         }
 
@@ -231,6 +234,18 @@ fun Application.configureSerialization() {
         }
 
     }
+}
+
+suspend inline fun <T> processCustomerData(
+    client: HttpClient,
+    url: String,
+    transform: (ArrayList<Customer>) -> T
+): T? {
+    val response = processGet(client, url)
+    if (response == null)
+        return null
+    val customerList = Json.decodeFromString<ArrayList<Customer>>(response)
+    return transform(customerList)
 }
 
 suspend fun processGet(client: HttpClient, url: String): String? {
