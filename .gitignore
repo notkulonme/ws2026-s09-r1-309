@@ -46,4 +46,5 @@ bin/
 
 error_report.csv
 clean.csv
+clean.json
 .idea/csv-editor.xml

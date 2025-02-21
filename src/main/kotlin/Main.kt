@@ -6,6 +6,8 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.time.LocalDate
+import kotlin.collections.ArrayList
 
 
 //TODO new runnable
@@ -43,7 +45,7 @@ suspend fun main(args: Array<String>) {
             val email =
                 if (elements[6].contains("@")) {
                     if (elements[6].split("@")[1].contains("."))
-                        elements[6]
+                        elements[6].lowercase()
                     else {
                         errorData.errors.add("Invalid email format")
                         null
@@ -52,9 +54,10 @@ suspend fun main(args: Array<String>) {
                     errorData.errors.add("Invalid email format")
                     null
                 }
+            val phoneBuffer = elements[7].replace(Regex("[^0-9]"), "")
             val phone =
-                if (elements[7].replace(Regex("[^0-9]"), "").length >= 10) {
-                    elements[7].replace(Regex("[^0-9]"), "")
+                if (phoneBuffer.length >= 10) {
+                    phoneBuffer
                 } else {
                     errorData.errors.add("Phone number too short")
                     null
@@ -75,11 +78,14 @@ suspend fun main(args: Array<String>) {
 
             val maxYear = 2025
             val minYear = 2000
+            val lastPurchaseAtYear: Int? = lastPurchaseAt?.split("-")?.get(0)?.toInt()
+            val joinedAtYear = joinedAt?.split("-")?.get(0)?.toInt()
 
             if (lastPurchaseAt == null) {
                 errorData.errors.add("lastPurchaseAt has invalid date format")
+
             } else {
-                if (lastPurchaseAt.split("-")[0].toInt() !in minYear..maxYear) {
+                if (lastPurchaseAtYear !in minYear..maxYear) { //checks only the year
                     errorData.errors.add("lastPurchaseAt is out of date range")
                     lastPurchaseAt = null
                 }
@@ -88,14 +94,14 @@ suspend fun main(args: Array<String>) {
             if (joinedAt == null) {
                 errorData.errors.add("joinedAt has invalid date format")
             } else {
-                if (joinedAt.split("-")[0].toInt() !in minYear..maxYear) {
+                if (joinedAtYear !in minYear..maxYear) {//checks only the year
                     errorData.errors.add("joinedAt is out of date range")
                     joinedAt = null
                 }
             }
 
             if (lastPurchaseAt != null && joinedAt != null) {
-                if (lastPurchaseAt.split("-")[0].toInt() < joinedAt.split("-")[0].toInt()) {
+                if (LocalDate.parse(lastPurchaseAt) < LocalDate.parse(joinedAt)) {
                     errorData.errors.add("Last purchase date earlier than join date")
                     lastPurchaseAt = null
                 }
@@ -103,6 +109,7 @@ suspend fun main(args: Array<String>) {
             val totalSpending = elements[11].toDouble()
             val averageOrderValue = elements[12].toDouble()
             val frequency = elements[13].toDouble()
+
             val preferredCategory = when (elements[14]) {
                 "Unknown", "TBD", "To Be Determined", "N/A" -> {
                     errorData.errors.add("Invalid preferredCategory")
@@ -150,18 +157,21 @@ suspend fun main(args: Array<String>) {
     println("errors have been saved to $errorFileName")
 
     println("importing to $url")
-    val unableToUpload =  uploadToServer(url, customerList.customers)
+    val unableToUpload = uploadToServer(url, customerList.customers)
     if (unableToUpload.size > 0) {
-        println("unable to upload:\n${unableToUpload.joinToString ( "\n" )}")
-    }
-    else{
+        println("unable to upload:\n${unableToUpload.joinToString("\n")}")
+    } else {
         println("everything was uploaded")
     }
 
 
-    val cleanOutputName = "clean.csv"
-    File(cleanOutputName).writeText(getCleanCsv(customerList.customers))
-    println("cleaned database have been saved to $cleanOutputName")
+    val cleanOutputNameCsv = "clean.csv"
+    val cleanOutputNameJson = "clean.json"
+
+    File(cleanOutputNameCsv).writeText(getCleanCsv(customerList.customers))
+    File(cleanOutputNameJson).writeText(getCleanedJson(customerList.customers))
+
+    println("cleaned database have been saved to $cleanOutputNameCsv")
 
 }
 
@@ -180,8 +190,8 @@ suspend fun uploadToServer(url: String, customerList: ArrayList<Customer>): Arra
                 unableToUpload.add(customer)
             }
         }
-    }catch (e:Exception){
-        customerList.forEach{unableToUpload.add(it)}
+    } catch (e: Exception) {
+        customerList.forEach { unableToUpload.add(it) }
     }
 
     client.close()
@@ -234,8 +244,8 @@ fun getCleanCsv(customers: ArrayList<Customer>): String {
     return csvContent.toString()
 }
 
-fun getCleanedJson(customers: ArrayList<Customer>):String{
-    val json = Json{prettyPrint = true}
+fun getCleanedJson(customers: ArrayList<Customer>): String {
+    val json = Json { prettyPrint = true }
     return json.encodeToString(customers).replace(": null", ": \"\"")
 }
 
