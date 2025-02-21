@@ -12,7 +12,7 @@ window.addEventListener('resize', function() {
 
 async function run() {
     await fetchAllDataParallel()
-    loadOverwievCharts()
+    loadOverwiev()
     loadCharts()
     loadTable()
 }
@@ -29,13 +29,14 @@ async function fetchDataFromApi(url, obj) {
 }
 async function fetchAllDataParallel() {
     await Promise.all(urls.map(url => fetchDataFromApi(url, datas)));
+    datas["sumOfPurchase"] = Number(datas["sumOfPurchase"])
 }
 
-function loadOverwievCharts(){
+function loadOverwiev(){
     document.getElementById("count").innerText = datas["count"]
     document.getElementById("avg-age").innerText = round(datas["avgAge"])
     document.getElementById("most-frequent-purchase-category").innerText = datas["preferedCategory"]
-    document.getElementById("sum-of-purchase").innerText = round(datas["sumOfPurchase"])
+    document.getElementById("sum-of-purchase").innerText = datas["sumOfPurchase"]
     document.getElementById("avg-order-value").innerText = round(datas["avgOrderValue"])
     document.getElementById("purchase-frequency").innerText = round(datas["frequency"])
 }
@@ -69,9 +70,6 @@ function loadCharts(){
         width: trendsWidth,
         height: trendsHeight,
         legend: options.legend,
-        hAxis: {
-            format: ''
-        },
     }
 
     genderChart.draw(genderData,  options)
