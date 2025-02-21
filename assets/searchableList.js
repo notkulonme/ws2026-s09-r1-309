@@ -19,6 +19,7 @@ function handleUserDataForm(){
         let value = valueWithSpace.replace(/\s+/g, "").replace(/^0$/g,""); 
         if(value){
             value = value.replace(/"/g,"")
+            value = value.replace(/^0001-01-01$/g,"")
             if(name === "_page"){
                 urlBuilder.push(`${name}=${value}&_limit=25`)
             }
