@@ -10,7 +10,7 @@ import java.time.LocalDate
 import kotlin.collections.ArrayList
 
 
-//TODO new runnable
+
 suspend fun main(args: Array<String>) {
     val filePath = args[0]
     val url = args[1]
@@ -171,7 +171,7 @@ suspend fun main(args: Array<String>) {
     File(cleanOutputNameCsv).writeText(getCleanCsv(customerList.customers))
     File(cleanOutputNameJson).writeText(getCleanedJson(customerList.customers))
 
-    println("cleaned database have been saved to $cleanOutputNameCsv")
+    println("cleaned database have been saved to $cleanOutputNameCsv&$cleanOutputNameJson")
 
 }
 
