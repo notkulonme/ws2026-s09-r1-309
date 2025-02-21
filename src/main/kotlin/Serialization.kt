@@ -14,6 +14,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.encodeToJsonElement
 import org.slf4j.LoggerFactory
+import java.math.BigDecimal
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
@@ -71,8 +72,8 @@ fun Application.configureSerialization() {
                 return@get
             }
             val customerList = json.decodeFromString<ArrayList<Customer>>(response)
-            val sumOfPurchase = customerList.sumOf { it.totalSpending }.toLong()
-            call.respond(mapOf("sumOfPurchase" to sumOfPurchase))
+            val sumOfPurchase = customerList.sumOf { BigDecimal(it.totalSpending) }
+            call.respond(mapOf("sumOfPurchase" to sumOfPurchase.toPlainString()))
         }
 
         get("/customers/avg-order-value") {
@@ -209,7 +210,7 @@ fun Application.configureSerialization() {
             }
             val customerList = json.decodeFromString<ArrayList<Customer>>(response)
             val trends = customerList
-                .mapNotNull { it.joinedAt?.split("-")?.get(0)?.toInt() }
+                .mapNotNull { it.joinedAt?.split("-")?.get(0) }
                 .groupingBy { it }
                 .eachCount()
                 .toList()
