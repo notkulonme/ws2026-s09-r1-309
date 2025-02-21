@@ -35,3 +35,7 @@ dependencies {
     testImplementation(libs.kotlin.test.junit)
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
 }
+tasks.shadowJar{
+    archiveBaseName.set("DashboardApi")
+    archiveVersion.set("")
+}

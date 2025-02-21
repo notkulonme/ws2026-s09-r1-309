@@ -236,7 +236,7 @@ fun Application.configureSerialization() {
 
     }
 }
-
+//I don't like this function but hey I can do stuff like this
 suspend inline fun <T> processCustomerData(
     client: HttpClient,
     url: String,
