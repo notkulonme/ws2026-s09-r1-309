@@ -246,6 +246,6 @@ fun getCleanCsv(customers: ArrayList<Customer>): String {
 
 fun getCleanedJson(customers: ArrayList<Customer>): String {
     val json = Json { prettyPrint = true }
-    return json.encodeToString(customers).replace(": null", ": \"\"")
+    return json.encodeToString(mapOf("customers" to customers)).replace(": null", ": \"\"")
 }
 
