@@ -39,7 +39,7 @@ tasks.shadowJar{
     manifest{
         attributes["Main-Class"] = "hu.notkulonme.import_script.MainKt"
     }
-    archiveBaseName.set("import script")
+    archiveBaseName.set("import-script")
     archiveVersion.set("")
     archiveClassifier.set("")
 }
