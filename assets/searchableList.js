@@ -1,9 +1,16 @@
+let wholeUserDataList = []
 fetchUserTable("http://localhost:3000/customers")
+
+function handleSubmit(event) {
+    event.preventDefault()
+}
 
 document.getElementById("userDataForm").addEventListener("submit", (event) => {
     event.preventDefault()
     handleUserDataForm()
 }) 
+const pageField = document.getElementById("pageField")
+pageField.addEventListener("change", () => paginate(wholeUserDataList, pageField.value))
 
 function handleUserDataForm(){
     const form = document.getElementById("userDataForm")
@@ -20,10 +27,8 @@ function handleUserDataForm(){
         if(value){
             value = value.replace(/"/g,"")
             value = value.replace(/^0001-01-01$/g,"")
-            if(name === "_page"){
-                urlBuilder.push(`${name}=${value}&_limit=25`)
-            }
-            else if(!value.includes("..")){
+            
+            if(!value.includes("..")){
                 urlBuilder.push(`${name}=${value}`)
             }
             else{
@@ -43,7 +48,7 @@ function handleUserDataForm(){
         }
     }
     const url = `http://localhost:3000/customers?${urlBuilder.join("&")}`
-    console.log(url)
+    //console.log(url)
     fetchUserTable(url)
 }
 
@@ -52,7 +57,11 @@ function fetchUserTable(url){
     .then(response => response.json())
     .then(data => {
         const customerList = Array.isArray(data) ? Array.from(data) : [data]
-        loadUserTable(customerList)
+        wholeUserDataList = customerList
+        const legend = document.getElementById("userLegend")
+        legend.innerText = `Results: ${customerList.length}`
+        pageField.value = 1
+        paginate(customerList, 1)
     })
     .catch(error => console.error(error) );
 }
@@ -93,9 +102,22 @@ function loadUserTable(customerList){
     }catch{
         table.insertRow().insertCell().textContent = "Error while fetching data"
     }
-    const legend = document.getElementById("userLegend")
-    legend.innerText = `Results: ${customerList.length}`
     const userTable = document.getElementById("userTable")
     userTable.innerHTML = ""
     userTable.appendChild(table)
+}
+
+function paginate(customerList,page){
+    const pageCountHolder = document.getElementById("pageCountHolder")
+    const pageCount = Math.ceil(customerList.length/25)
+    
+    pageCountHolder.innerText = `Page count: ${pageCount}`
+    pageField.max = pageCount
+    
+    const startIndex = (page-1) * 25
+
+    pageArray = customerList.slice(startIndex, startIndex+25)
+
+
+    loadUserTable(pageArray)
 }

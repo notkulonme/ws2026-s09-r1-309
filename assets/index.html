@@ -182,16 +182,22 @@
                 </select>
             </div>
             <div class="formElement">
-                <label for="_page">Page:</label>
-                <br>
-                <input type="number" name="_page" min="0" value="0">
-            </div>
-            <div class="formElement">
                 <input type="submit">
             </div>
         </form>
     </fieldset>
 
+    <br>
+    <form class="container" id="pageForm" onsubmit="handleSubmit(event)">
+        <div class="formElement">
+            <label for="_page">Page:</label>
+            <br>
+            <input type="number" name="_page" min="1" value="1" id="pageField">
+        </div>
+        <div class="formElement">
+            <p id="pageCountHolder">Page count: 0</p>
+        </div>
+    </form>
     <br><br>
 
     <fieldset>

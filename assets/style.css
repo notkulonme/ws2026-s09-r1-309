@@ -77,8 +77,7 @@ legend{
 }
 
 #userTable{
-    max-height: 40rem;
-    overflow: scroll;
+    width: 100%;
 }
 #sticky{
     position: sticky;
