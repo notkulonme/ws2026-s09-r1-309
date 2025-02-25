@@ -62,12 +62,12 @@ Returns the whole database.
 
 To run the jar need at least [jdk 21](https://www.oracle.com/java/technologies/downloads/#jdk21-windows) and a [JSON Server stable version (v0.17.4)](https://github.com/typicode/json-server/tree/v0).
 
-After starting the JSON Server you can start the API. The program doesn't take any argument. You need to run the API in the same directory with the assets' directory or configure it manually.
+After starting the JSON Server you can start the API. The program doesn't take any argument. You need to run the API in the same directory with the assets' directory or configure it manually. The jar file is in the build directory.
 
 Example for the command:
 
 ```bash 
-  java -jar dashboard-api.jar
+  java -jar dashboard-api-all.jar
 ```
 
 ## Build the project
