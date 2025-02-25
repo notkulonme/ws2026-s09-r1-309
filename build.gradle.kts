@@ -36,6 +36,6 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
 }
 tasks.shadowJar{
-    archiveBaseName.set("DashboardApi")
+    archiveBaseName.set("dashboard-api")
     archiveVersion.set("")
 }
