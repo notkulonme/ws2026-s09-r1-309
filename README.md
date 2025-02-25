@@ -4,6 +4,8 @@ To run the API you can [build](#build-the-project) the project yourself or [use]
 
 [showcase video](https://youtu.be/3Rdu2szfEsE)
 
+Import Script is in the other branch.
+
 ## API endpoints
 
 Everything is returned in an object where the key is the api endpoint in camel case.
