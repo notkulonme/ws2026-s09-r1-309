@@ -1,39 +1,96 @@
-# dashboard-api
+# Dashboard API
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+To run the API you can [build](#build-the-project) the project yourself or [use](#run-the-jar) the provided .jar file.
 
-Here are some useful links to get you started:
+[showcase video](https://youtu.be/3Rdu2szfEsE)
 
-- [Ktor Documentation](https://ktor.io/docs/home.html)
-- [Ktor GitHub page](https://github.com/ktorio/ktor)
-- The [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). You'll need to [request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up) to join.
+## API endpoints
 
-## Features
+Everything is returned in an object where the key is the api endpoint in camel case.
 
-Here's a list of features included in this project:
+> /customers/count
 
-| Name                                                                   | Description                                                                        |
-| ------------------------------------------------------------------------|------------------------------------------------------------------------------------ |
-| [Content Negotiation](https://start.ktor.io/p/content-negotiation)     | Provides automatic content conversion according to Content-Type and Accept headers |
-| [Routing](https://start.ktor.io/p/routing)                             | Provides a structured routing DSL                                                  |
-| [kotlinx.serialization](https://start.ktor.io/p/kotlinx-serialization) | Handles JSON serialization using kotlinx.serialization library                     |
+Returns the total customer count.
 
-## Building & Running
+> /customers/avg-age
 
-To build or run the project, use one of the following tasks:
+Returns the average age of customers.
 
-| Task                             | Description                                                          |
-|----------------------------------|---------------------------------------------------------------------- |
-| `./gradlew test`                 | Run the tests                                                        |
-| `./gradlew build`                | Build everything                                                     |
-| `buildFatJar`                    | Build an executable JAR of the server with all dependencies included |
-| `buildImage`                     | Build the docker image to use with the fat JAR                       |
-| `publishImageToLocalRegistry`    | Publish the docker image locally                                     |
-| `run`                            | Run the server                                                       |
-| `runDocker`                      | Run using the local docker image                                     |
-If the server starts successfully, you'll see the following output:
+> /customers/most-frequent-purchase-category
+ 
+Returns the most preferred purchase category.
 
+> /customers/sum-of-purchase
+
+Returns the total purchase value.
+
+> /customers/avg-order-value
+
+Returns the average order value.
+
+> /customers/purchase-frequency
+
+Returns the average purchase frequency.
+
+> /customers/gender-dist
+
+Returns the genders each count in a matrix where the first value is the gender's name and the second is the count of it in the database.
+
+> /customers/membership-dist
+
+Returns the membership level counts the same matrix format as `/customers/gender-dist`.
+
+> /customers/categories
+
+Returns categories each count the same matrix format as `/customers/gender-dist`.
+
+> /customers/top-spenders
+
+Returns the top 10 spenders in the same matrix format as `/customers/gender-dist`
+
+> /customers/trends
+
+Returns the new customers count/year in the same matrix format as `/customers/gender-dist`
+
+> /customers
+
+Returns the whole database.
+
+## Run the jar
+
+To run the jar need at least [jdk 21](https://www.oracle.com/java/technologies/downloads/#jdk21-windows) and a [JSON Server stable version (v0.17.4)](https://github.com/typicode/json-server/tree/v0).
+
+After starting the JSON Server you can start the API. The program doesn't take any argument. You need to run the API in the same directory with the assets' directory or configure it manually.
+
+Example for the command:
+
+```bash 
+  java -jar dashboard-api.jar
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+
+## Build the project
+
+To build the project you can use the following commands in the project's directory:
+
+```./gradlew shadowjar``` this will create a fatjar
+
+```./gradlew build``` this will create a jar
+
+This will output a runnable in the build directory
+
+## Configure manually
+
+For custom configuration you need a yaml file. Run the jar with `-config=application.yaml` flag.
+
+Basic yaml layout:
+```yaml
+ktor:
+    application:
+        modules:
+            - hu.notkulonme.ApplicationKt.module
+    deployment:
+        port: 8080
+api:
+    database_url : "http://localhost:3000/customers" #rewrite this for another database endpoint
+    assets : "assets/"                               #rewrite this for another assets directory path
 ```
